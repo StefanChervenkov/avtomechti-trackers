@@ -21,7 +21,8 @@ export async function login(data: { email: string; password: string }) {
     }
 
     // Set the authToken cookie (Supabase session token)
-    cookies().set({
+    const cookieStore = await cookies();
+    cookieStore.set({
       name: "authToken",
       value: session.session?.access_token || "", // Use the access token from Supabase
       httpOnly: true,
