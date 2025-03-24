@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "@/app/actions.ts/auth";
+import { login } from "@/app/actions/auth";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [errors, setErrors] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,14 +29,11 @@ export default function Login() {
 
     if (result.success) {
       // Redirect or handle successful login
-      window.location.href = "/";
+      router.push("/devices");
     } else if (result.errors) {
       // Display validation errors
       setErrors(result.errors);
-    } else {
-      // Display general error message
-      setErrors([result.message]);
-    }
+    } 
   };
 
   return (

@@ -11,7 +11,7 @@ export async function login(data: { email: string; password: string }) {
     const validatedData = LoginFormSchema.parse(data);
 
     // Authenticate the user with Supabase
-    const { data: session, error } = await supabase.auth.signInWithPassword({
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: validatedData.email,
       password: validatedData.password,
     });
@@ -20,18 +20,13 @@ export async function login(data: { email: string; password: string }) {
       return { success: false, message: error.message };
     }
 
-    // Set the authToken cookie (Supabase session token)
+    // Set the session cookie
     const cookieStore = await cookies();
-    cookieStore.set({
-      name: "authToken",
-      value: session.session?.access_token || "", // Use the access token from Supabase
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24, // 1 day
-    });
+    cookieStore.set("sb:token", authData.session.access_token);
+
 
     return { success: true };
+
   } catch (error) {
     if (error instanceof z.ZodError) {
       // Return validation errors

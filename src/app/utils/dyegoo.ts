@@ -64,9 +64,32 @@ export async function getDeviceDataByImei(imei: string, accessToken: string) {
 
     if (response.ok) {
         return response.json();
-        
+
     } else {
         console.log(`Error getting device data: ${response.statusText}`);
     }
+}
+
+export async function getDeviceLocation(DeviceId: number, Token: string) {
+    const response = await fetch(`${process.env.DYEGOO_API}/api/Location/Tracking`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            DeviceId,
+            Token,
+            MapType: '',
+            Language: '',
+            AppId: ''
+        }),
+    });
+
+    if (response.ok) {
+        return response.json();
+    } else {
+        console.log(`Error getting device location: ${response.statusText}`);
+    }
+
 }
 

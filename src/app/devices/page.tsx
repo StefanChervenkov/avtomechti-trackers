@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/app/lib/supabase";
+import Link from 'next/link';
 
 export default function DevicesPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -141,6 +142,10 @@ export default function DevicesPage() {
           <p>
             <strong>Device ID:</strong> {selectedDevice.DeviceId}
           </p>
+          <Link href={`/devices/${selectedDevice.IMEI}`}>
+            <p className="text-blue-500 cursor-pointer">Device details</p>
+
+          </Link>
         </div>
       )}
     </div>

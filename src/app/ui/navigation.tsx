@@ -16,9 +16,8 @@ export default function Navigation() {
     <div className="flex">
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-transform transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:w-64`}
+        className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-transform transform ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } md:w-64`}
       >
         <div className="flex items-center justify-between p-4">
           <h1 className="text-lg font-bold">Menu</h1>
@@ -42,6 +41,13 @@ export default function Navigation() {
           >
             Devices
           </Link>
+          <Link
+            href="/active-devices"
+            className="block py-2 px-4 rounded hover:bg-gray-700 transition"
+          >
+            Active Devices
+          </Link>
+
           <Link
             href="/settings"
             className="block py-2 px-4 rounded hover:bg-gray-700 transition"
