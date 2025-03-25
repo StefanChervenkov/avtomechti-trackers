@@ -1,89 +1,54 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/app/lib/supabase";
+import React, { useState, useTransition, useEffect } from "react";
+import * as deviceActions from "@/app/actions/deviceActions";
+
+
+
 import Link from 'next/link';
 
 export default function DevicesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(""); // Debounced value
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [searchMode, setSearchMode] = useState("IMEI"); // Default search mode is IMEI
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<{ DeviceId: string; IMEI: string; PlateNumber: string }[]>([]);
   const [selectedDevice, setSelectedDevice] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [disableSuggestions, setDisableSuggestions] = useState(false); // New state to disable suggestions
+  const [isPending, startTransition] = useTransition();
 
-  // Debounce logic: Update `debouncedSearchTerm` after a delay
+  // 🕒 Debounce Effect: Waits 500ms before setting debouncedSearchTerm
   useEffect(() => {
-    const handler = setTimeout(() => {
+    const delay = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 500); // 500ms delay
+    }, 500);
 
-    return () => {
-      clearTimeout(handler); // Clear timeout if the user types again
-    };
+    return () => clearTimeout(delay);
   }, [searchTerm]);
 
-  // Fetch suggestions whenever `debouncedSearchTerm` changes
+  // 🔄 Fetch Suggestions Effect: Fetches suggestions based on the debounced search term
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (disableSuggestions || debouncedSearchTerm.trim() === "") {
-        setSuggestions([]);
-        return;
-      }
+    if (!debouncedSearchTerm) return; // Skip if the search term is empty
 
-      setLoading(true);
-
-      let data, error;
+    startTransition(async () => {
       if (searchMode === "IMEI") {
-        // Call the PostgreSQL function for partial matching on IMEI
-        const response = await supabase.rpc("search_devices_by_imei", {
-          search_term: debouncedSearchTerm,
-        });
-        data = response.data;
-        error = response.error;
+        const searchResults = await deviceActions.searchByIMEI(debouncedSearchTerm);
+        setSuggestions(searchResults);
+        console.log(searchResults);
       } else {
-        // Search by PlateNumber (text)
-        const response = await supabase
-          .from("trackers")
-          .select("*")
-          .ilike("PlateNumber", `%${debouncedSearchTerm}%`); // Case-insensitive partial match for PlateNumber
-        data = response.data;
-        error = response.error;
+        const searchResults = await deviceActions.searchByPlateNumber(debouncedSearchTerm);
+        setSuggestions(searchResults);
+        console.log(searchResults);
       }
+    });
 
-      setLoading(false);
+  }, [debouncedSearchTerm]);
 
-      if (error) {
-        console.error("Error fetching devices:", error.message);
-        return;
-      }
-
-      setSuggestions(data || []);
-    };
-
-    fetchSuggestions();
-  }, [debouncedSearchTerm, searchMode, disableSuggestions]);
-
+  //Todo fix the types
   const handleSuggestionClick = (device: any) => {
     setSelectedDevice(device);
-
-    // Disable fetching suggestions temporarily
-    setDisableSuggestions(true);
-
-    // Clear suggestions
     setSuggestions([]);
 
-    // Set the search term based on the selected mode
-    setSearchTerm(searchMode === "IMEI" ? device.IMEI : device.PlateNumber);
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-
-    // Re-enable fetching suggestions when the user types again
-    setDisableSuggestions(false);
-  };
 
   return (
     <div className="p-4 max-w-screen-md mx-auto">
@@ -106,13 +71,13 @@ export default function DevicesPage() {
       <input
         type="text"
         value={searchTerm}
-        onChange={handleSearchChange}
+        onChange={(e) => setSearchTerm(e.target.value)}
         placeholder={`Search by ${searchMode}`}
         className="w-full p-2 border border-gray-300 rounded mb-4"
       />
 
       {/* Loading Indicator */}
-      {loading && <p className="text-gray-500">Loading...</p>}
+      {isPending && <p className="text-gray-500">Loading...</p>}
 
       {/* Suggestions */}
       {suggestions.length > 0 && (
