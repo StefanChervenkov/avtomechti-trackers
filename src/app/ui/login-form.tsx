@@ -28,7 +28,8 @@ export default function Login() {
     setPending(false);
 
     if (result.success) {
-      // Redirect or handle successful login
+      // Refresh the page to allow middleware to detect the cookie
+      router.refresh();
       router.push("/devices");
     } else if (result.errors) {
       // Display validation errors

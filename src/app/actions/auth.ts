@@ -20,10 +20,14 @@ export async function login(data: { email: string; password: string }) {
       return { success: false, message: error.message };
     }
 
-    // Set the session cookie
+    // Set the session cookie with proper options
     const cookieStore = await cookies();
-    cookieStore.set("sb:token", authData.session.access_token);
-
+    cookieStore.set("sb:token", authData.session.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      sameSite: "strict",
+    });
 
     return { success: true };
 
