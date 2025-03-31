@@ -6,8 +6,16 @@ import Link from "next/link";
 import { getDeviceLocation } from "@/app/utils/dyegoo";
 
 export default function ActiveDevicesPage() {
-  const [devices, setDevices] = useState([]); // All active devices
-  const [filteredDevices, setFilteredDevices] = useState([]); // Devices to display
+  interface Device {
+    IMEI: string;
+    PlateNumber: string;
+    DeviceId: string;
+    AccessToken: string;
+    // Add other fields as needed
+  }
+
+  const [devices, setDevices] = useState<Device[]>([]); // All active devices
+  const [filteredDevices, setFilteredDevices] = useState<Device[]>([]); // Devices to display
   const [loading, setLoading] = useState(true);
   const [showNotWorking, setShowNotWorking] = useState(false); // Toggle for "Not Working" filter
 
