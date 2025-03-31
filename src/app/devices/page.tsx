@@ -12,7 +12,7 @@ export default function DevicesPage() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [searchMode, setSearchMode] = useState("IMEI"); // Default search mode is IMEI
   const [suggestions, setSuggestions] = useState<{ DeviceId: string; IMEI: string; PlateNumber: string }[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [selectedDevice, setSelectedDevice] = useState<{ DeviceId: string; IMEI: string; PlateNumber: string } | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // 🕒 Debounce Effect: Waits 500ms before setting debouncedSearchTerm
@@ -40,10 +40,10 @@ export default function DevicesPage() {
       }
     });
 
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, searchMode]);
 
   //Todo fix the types
-  const handleSuggestionClick = (device: any) => {
+  const handleSuggestionClick = (device: { DeviceId: string; IMEI: string; PlateNumber: string }) => {
     setSelectedDevice(device);
     setSuggestions([]);
 
