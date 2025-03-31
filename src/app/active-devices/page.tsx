@@ -7,9 +7,9 @@ import { getDeviceLocation } from "@/app/utils/dyegoo";
 
 export default function ActiveDevicesPage() {
   interface Device {
-    IMEI: string;
+    IMEI: number;
     PlateNumber: string;
-    DeviceId: string;
+    DeviceId: number;
     AccessToken: string;
     // Add other fields as needed
   }
