@@ -41,3 +41,23 @@ export async function login(data: { email: string; password: string }) {
     return { success: false, message: "Something went wrong. Please try again." };
   }
 }
+
+export async function logout() {
+  try {
+    // Sign out the user
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      return { success: false, message: error.message };
+    }
+
+    // Clear the session cookie
+    const cookieStore = await cookies();
+    cookieStore.delete("sb:token");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error signing out:", error);
+    return { success: false, message: "Something went wrong. Please try again." };
+  }
+}

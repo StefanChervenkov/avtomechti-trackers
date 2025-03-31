@@ -25,7 +25,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   // Read the current pathname from the cookie
-  const pathname = (await cookies().get("current-pathname"))?.value;
+  const cookiesData = await cookies();
+  const pathname = cookiesData.get("current-pathname")?.value;
 
   return (
     <html lang="en">

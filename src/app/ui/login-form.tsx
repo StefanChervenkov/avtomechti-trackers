@@ -24,6 +24,7 @@ export default function Login() {
 
     // Call the server action
     const result = await login(data);
+      
 
     setPending(false);
 
@@ -31,9 +32,9 @@ export default function Login() {
       // Refresh the page to allow middleware to detect the cookie
       router.refresh();
       router.push("/devices");
-    } else if (result.errors) {
+    } else  {
       // Display validation errors
-      setErrors(result.errors);
+      setErrors(result.message ? [result.message] : []);
     } 
   };
 
